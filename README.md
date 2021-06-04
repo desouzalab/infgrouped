@@ -1,2 +1,2 @@
 # univ.em
-Contem as funções do algoritmo EM da zahri
+R code for parameter estimation of normal grouped data. 
