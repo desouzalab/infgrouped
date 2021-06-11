@@ -9,23 +9,23 @@
 #' @param freq frequency over the intervals, values in vector.
 #' @return Return M which are the estimates of mean in E-step.
 #' @examples
-#' 
-#'  library(em.estimate)
+#'
+#'  library(infgrouped)
 #'  library(stats)
-#'  
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  munew <- em.estimate::mest(theta=c(67,2),
+#'
+#'  munew <- infgrouped:::mest(theta=c(67,2),
 #'                bl=simdataaaa$simul_data[,1,1],
 #'                bu=simdataaaa$simul_data[,2,1],
 #'                freq=simdataaaa$simul_data[,3,1])
-#'  
-#'  
+#'
+#'
 #'  munew
 
 
@@ -64,19 +64,19 @@ mest<- function(theta,bl,bu,freq){
 #' @param muupdate Is the updated estimates of mu.
 #' @return Return ss which are the estimates of sigma (variance) in E-step.
 #' @examples
-#' 
-#'  library(em.estimate)
+#'
+#'  library(infgrouped)
 #'  library(stats)
-#' 
-#' 
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                         n=50,
 #'                         nclass = 10,
 #'                         mean = 68,
 #'                         sd = 1.80,
 #'                         fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  ssnew <- em.estimate::ssest(theta=c(67,2),
+#'
+#'  ssnew <- infgrouped:::ssest(theta=c(67,2),
 #'               bl=simdataaaa$simul_data[,1,1],
 #'               bu=simdataaaa$simul_data[,2,1],
 #'               muupdate=mest(theta=c(67,2),
@@ -84,7 +84,7 @@ mest<- function(theta,bl,bu,freq){
 #'                             bu=simdataaaa$simul_data[,2,1],
 #'                             freq=simdataaaa$simul_data[,3,1]),
 #'               freq=simdataaaa$simul_data[,3,1])
-#'  
+#'
 #'  ssnew
 
 
@@ -126,7 +126,7 @@ ssest<- function(theta,bl,bu,muupdate,freq){
 #' @param bl Lower bound of the intervals, values in vector, starting from -inf.
 #' @param bu Upper bound of the intervals, values in vector, ending with +inf.
 #' @param freq Frequency over the intervals, values in vector.
-#' @param theta_init The initial values of the parameters, for mu and sigma. 
+#' @param theta_init The initial values of the parameters, for mu and sigma.
 #'  Vector with two values.
 #' @param maxit The maximum number of iteration of the EM algorithm.
 #' @param tol1 A number, the stopping criteria for updating mu.
@@ -137,19 +137,19 @@ ssest<- function(theta,bl,bu,muupdate,freq){
 #'  "sigma_estimate" for the variance.
 #' @export
 #' @examples
-#' 
-#'  library(em.estimate)
-#' 
-#' 
+#'
+#'  library(infgrouped)
+#'
+#'
 #'  output2 <- base::list()
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                        n=50,
 #'                        nclass = 10,
 #'                        mean = 68,
 #'                        sd = 1.80,
 #'                        fr_breaks=c(62,64,66,68,70,72,74,76,78))
 #'
-#'  output2 <- em.estimate::em(bl=simdataaaa$simul_data[,1,1],
+#'  output2 <- infgrouped::em(bl=simdataaaa$simul_data[,1,1],
 #'                bu=simdataaaa$simul_data[,2,1],
 #'                freq=simdataaaa$simul_data[,3,1],
 #'                theta_init=c(67,2),
@@ -166,8 +166,8 @@ em<- function(bl,bu,freq,theta_init,maxit=1000,tol1=1e-3,tol2=1e-4){
 
   for (i in 1:maxit){
     cur<- c(Mu_cur,S_cur)
-    munew<- em.estimate::mest(theta=cur,bl,bu,freq)
-    ssnew<- em.estimate::ssest(theta=cur,bl,bu,
+    munew<- infgrouped:::mest(theta=cur,bl,bu,freq)
+    ssnew<- infgrouped:::ssest(theta=cur,bl,bu,
                   muupdate=mest(theta=cur,bl,bu,freq) ,freq)
 
     Mu_new <- munew
@@ -210,19 +210,19 @@ em<- function(bl,bu,freq,theta_init,maxit=1000,tol1=1e-3,tol2=1e-4){
 #'  the second column the observation count.
 #' @export
 #' @examples
-#' 
-#'  library(em.estimate)
+#'
+#'  library(infgrouped)
 #'  library(stats)
-#'  
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                        n=50,
 #'                        nclass = 10,
 #'                        mean = 68,
 #'                        sd = 1.80,
 #'                        fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'                        
+#'
 #'  simdataaaa
-#'  
+#'
 
 
 univ_simul <- function(ncol_matrix=30,
@@ -290,20 +290,21 @@ univ_simul <- function(ncol_matrix=30,
 #' @param data Contingency table, matrix format of three columns, first column
 #'  lower limits, second column upper limits, and third column observed
 #'  frequencies.
-#' @return Simulate data about each specific interval and assign it to the 
+#' @return Simulate data about each specific interval and assign it to the
 #'  simulate matrix.
 #' @examples
-#' 
+#'
 #'  library(truncnorm)
-#' 
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  zm_matriz <- em.estimate::zmcem(theta=c(67,2),data = simdataaaa$simul_data[,,1])
+#'
+#'  zm_matriz <- infgrouped:::zmcem(theta=c(67,2),
+#'  data = simdataaaa$simul_data[,,1])
 #'  zm_matriz
 
 zmcem<- function(theta,data){
@@ -332,18 +333,18 @@ zmcem<- function(theta,data){
 #'  of the zmcem function.
 #' @return Return mu which are the estimates of mean in E-step.
 #' @examples
-#' 
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  zm_matriz <- em.estimate::zmcem(theta=c(67,2),
+#'
+#'  zm_matriz <- infgrouped::zmcem(theta=c(67,2),
 #'                                  data = simdataaaa$simul_data[,,1])
-#'  
-#'  mu_estimate <- em.estimate::mumcem(data = simdataaaa$simul_data[,,1],
+#'
+#'  mu_estimate <- infgrouped:::mumcem(data = simdataaaa$simul_data[,,1],
 #'                            simz = zm_matriz)
 #'  mu_estimate
 
@@ -376,20 +377,20 @@ mumcem<- function(data,simz){
 #' @param mupd Is the updated estimates of mu.
 #' @return Return sigma which are the estimates of variance in E-step.
 #' @examples
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  zm_matriz <- em.estimate::zmcem(theta=c(67,2),
+#'
+#'  zm_matriz <- infgrouped:::zmcem(theta=c(67,2),
 #'                                  data = simdataaaa$simul_data[,,1])
-#'  
-#'  mu_estimate <- em.estimate::mumcem(data = simdataaaa$simul_data[,,1], 
+#'
+#'  mu_estimate <- infgrouped:::mumcem(data = simdataaaa$simul_data[,,1],
 #'                                     simz = zm_matriz)
-#'  
-#'  sigma_estimate <- em.estimate::sigmamcem(data = simdataaaa$simul_data[,,1],
+#'
+#'  sigma_estimate <- infgrouped:::sigmamcem(data = simdataaaa$simul_data[,,1],
 #'                             simz = zm_matriz,
 #'                             mupd = mu_estimate)
 #'  sigma_estimate
@@ -423,7 +424,7 @@ sigmamcem<- function(data,simzz,mupd){
 #' @param data Contingency table, matrix format of three columns, first column
 #'  lower limits, second column upper limits, and third column observed
 #'  frequencies.
-#' @param theta_init The initial values of the parameters, for mu and sigma. 
+#' @param theta_init The initial values of the parameters, for mu and sigma.
 #'  Vector with two values.
 #' @param maxit The maximum number of iteration of the EM algorithm.
 #' @param tol1 A number, the stopping criteria for updating mu.
@@ -433,28 +434,28 @@ sigmamcem<- function(data,simzz,mupd){
 #'  estimate. Returns the estimates for mean (mu) and sigma (variance).
 #' @export
 #' @examples
-#' 
-#'  library(em.estimate)
-#' 
-#' 
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'  library(infgrouped)
+#'
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
+#'
 #'  outputmcem2 <- base::list()
-#'  
-#'  outputmcem2[[1]] <- em.estimate::mcem(data=simdataaaa$simul_data[,,1],
+#'
+#'  outputmcem2[[1]] <- infgrouped::mcem(data=simdataaaa$simul_data[,,1],
 #'                            theta_init=c(67,2),
 #'                            maxit = 1000,tol1=1e-2,tol2=1e-3)
-#'  
+#'
 #'  outputmcem2
 
 
 mcem<- function(data,theta_init,maxit=1000,tol1=1e-2,tol2=1e-3){
-  
+
   flag<- 0
   Mu_cur<- theta_init[1]
   S_cur<- theta_init[2]
@@ -462,16 +463,16 @@ mcem<- function(data,theta_init,maxit=1000,tol1=1e-2,tol2=1e-3){
   Svec<- base::rep(0,maxit)
   Mvec<- base::rep(0,maxit)
   mydat<- data
-  
+
   for (i in 1:maxit){
     cur<- c(Mu_cur,S_cur)
-    munew<- em.estimate::mumcem(data=mydat,
-                            simz=em.estimate::zmcem(theta=cur,
+    munew<- infgrouped:::mumcem(data=mydat,
+                            simz=infgrouped:::zmcem(theta=cur,
                                                 data=mydat))
 
-    Snew<- em.estimate::sigmamcem(data=mydat,simzz=zmcem(theta=cur,data=mydat),
-                     mupd=em.estimate::mumcem(data=mydat,
-                                          simz=em.estimate::zmcem(theta=cur,
+    Snew<- infgrouped:::sigmamcem(data=mydat,simzz=zmcem(theta=cur,data=mydat),
+                     mupd=infgrouped:::mumcem(data=mydat,
+                                          simz=infgrouped:::zmcem(theta=cur,
                                                               data=mydat)))
 
     Mu_new<- munew
@@ -509,30 +510,30 @@ mcem<- function(data,theta_init,maxit=1000,tol1=1e-2,tol2=1e-3){
 #' @param tl Lower end of the intervals.
 #' @param freq Frequency on each interval.
 #' @param theta The arguments including mu and sigma.
-#' @return Return the result of the log likelihood for the mean (mu) and sigma 
+#' @return Return the result of the log likelihood for the mean (mu) and sigma
 #'  (standard deviation) estimates.
 #' @examples
-#' 
+#'
 #'  library(stats)
-#' 
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  
+#'
+#'
 #'  tl <- simdataaaa$simul_data[,1,1]
 #'  freq <- simdataaaa$simul_data[,3,1]
 #'  res <- stats::optim(c((67/2),(1/2)),fn=Logll,tl=tl,freq=freq,
 #'  method="L-BFGS-B",lower=c(0.02,0.2),upper=c(180,2))
-#'  
+#'
 #'  estimate<- res$par
 #'  mu_estimate<- base::round(res$par[1]/res$par[2],4)
-#'  sigma_estimate<- base::round(1/res$par[2],4) 
+#'  sigma_estimate<- base::round(1/res$par[2],4)
 #'  sigma_squared_estimate = sigma_estimate^2
-#'  
+#'
 #'  mu_estimate
 #'  sigma_squared_estimate
 
@@ -559,20 +560,20 @@ Logll <- function(tl,freq,theta){
   c<-0
   for(i in 2:(m-1)){
 
-    if ( (stats::pnorm(theta[2]*tl[i+1]-theta[1]) - 
+    if ( (stats::pnorm(theta[2]*tl[i+1]-theta[1]) -
           stats::pnorm(theta[2]*tl[i]-theta[1])) < 1e-16 ){
       c <- c -1e+6
     }#end if
 
     else{
         c <- c + freq[i]*
-          (base::log( stats::pnorm(theta[2]*tl[i+1]-theta[1]) - 
+          (base::log( stats::pnorm(theta[2]*tl[i+1]-theta[1]) -
                   stats::pnorm(theta[2]*tl[i]-theta[1])))
     }#end else
   }#end for
 
   L <- -(a+b+c)
-  
+
   return(L)
 }
 ################################################################################
@@ -586,33 +587,33 @@ Logll <- function(tl,freq,theta){
 #' @param freq Frequency on each interval.
 #' @param intial_mu Initial numeric value for mu (mean).
 #' @param intial_sigma Initial numeric value for sigma.
-#' @return Return the result of the log likelihood for the mean (mu) and sigma 
+#' @return Return the result of the log likelihood for the mean (mu) and sigma
 #'  (variance) estimates.
 #' @export
 #' @examples
-#'  simdataaaa <- em.estimate::univ_simul(ncol_matrix=1,
+#'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                          n=50,
 #'                          nclass = 10,
 #'                          mean = 68,
 #'                          sd = 1.80,
 #'                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
-#'  
-#'  
+#'
+#'
 #'  tl<- simdataaaa$simul_data[,1,1]
 #'  freq<- simdataaaa$simul_data[,3,1]
-#'  
-#'  estimates_simul <- em.estimate::exact_mle(tl=tl,
+#'
+#'  estimates_simul <- infgrouped::exact_mle(tl=tl,
 #'                              freq=freq,
 #'                              intial_mu = (67/2),
 #'                              intial_sigma = (1/2))
-#'  
+#'
 #'  estimates_simul
 
 exact_mle <- function(tl = c(-Inf,62,64,66,68,70,72,74,76,78),
                       freq = c(0,1,9,16,15,8,1,0,0,0),
                       intial_mu = (67/2),
                       intial_sigma = (1/2)){
-  
+
   res <- stats::optim(c(intial_mu,intial_sigma),
                       fn=Logll,
                       tl=tl,
@@ -620,16 +621,16 @@ exact_mle <- function(tl = c(-Inf,62,64,66,68,70,72,74,76,78),
                       method="L-BFGS-B",
                       lower=c(0.02,0.2),
                       upper=c(180,2))
-  
+
   mu_estimate<- base::round(res$par[1]/res$par[2],4)
   sigma_estimate<- base::round(1/res$par[2],4)
   sigma_squared_estimate = sigma_estimate^2
-  
+
   final_list <- base::list("mu_estimate" = mu_estimate,
                            "sigma_estimate" = sigma_squared_estimate)
-  
+
   return(final_list)
-  
+
 }
 ################################################################################
 

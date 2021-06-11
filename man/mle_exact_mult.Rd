@@ -29,12 +29,12 @@ covariance).
 
 
 library(MASS)
-library(em.univ)
+library(infgrouped)
 library(tmvtnorm)
 
 set.seed(12345)
 
-simulateddata = em.univ::mult_simul(mm = c(68,68),
+simulateddata = infgrouped::mult_simul(mm = c(68,68),
                           ss = base::matrix(c(3,2,2,6),2,2) ,
                           n_data_sets = 1,
                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -70,7 +70,7 @@ simulateddata = em.univ::mult_simul(mm = c(68,68),
 
 theta<- c(65,65,3,6,2.12132)
 
-out = em.univ::mle_exact_mult(theta<- c(65,65,3,6,2.12132),
+out = infgrouped::mle_exact_mult(theta<- c(65,65,3,6,2.12132),
                      data=simulateddata[,,1])
 
 out

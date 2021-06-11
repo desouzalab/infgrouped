@@ -21,28 +21,28 @@ exact_mle(
 \item{intial_sigma}{Initial numeric value for sigma.}
 }
 \value{
-Return the result of the log likelihood for the mean (mu) and sigma 
+Return the result of the log likelihood for the mean (mu) and sigma
  (variance) estimates.
 }
 \description{
 Maximizing the Likelihood Estimation 1.
 }
 \examples{
- simdataaaa <- em.univ::univ_simul(ncol_matrix=1,
+ simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
                          n=50,
                          nclass = 10,
                          mean = 68,
                          sd = 1.80,
                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
- 
- 
+
+
  tl<- simdataaaa$simul_data[,1,1]
  freq<- simdataaaa$simul_data[,3,1]
- 
- estimates_simul <- em.univ::exact_mle(tl=tl,
+
+ estimates_simul <- infgrouped::exact_mle(tl=tl,
                              freq=freq,
                              intial_mu = (67/2),
                              intial_sigma = (1/2))
- 
+
  estimates_simul
 }

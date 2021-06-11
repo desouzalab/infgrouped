@@ -22,10 +22,10 @@
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -97,38 +97,38 @@ mult_simul <- function(mm = c(68,68),
                                    base::rep(72,2,10),
                                    base::rep(Inf,10))
 ){
-  
+
   ssdata = base::array(base::rep(0,1000*2*n_data_sets),
                        c(1000,2,n_data_sets))
-  
+
   for(i in 1: n_data_sets){
-    
+
     ssdata[,,i]<- MASS::mvrnorm(n=1000,mm,ss)
   }
-  
+
   x<- base::matrix(base::rep(0,1000*n_data_sets),ncol=n_data_sets)
   y<- base::matrix(base::rep(0,1000*n_data_sets),ncol=n_data_sets)
-  
+
   for(i in 1:n_data_sets){
     x[,i]<- ssdata[,1,i]
     y[,i]<- ssdata[,2,i]
   }
-  
+
   Freqtable1<- base::array(base::rep(0,10*10*n_data_sets),
                            c(10,10,n_data_sets))
-  
+
   for(i in 1:n_data_sets){
     x_cut<- base::cut(x[,i],breaks= breaks_x)
     y_cut<- base::cut(y[,i],breaks=breaks_y)
     Freqtable1[,,i]<- base::table(x_cut,y_cut)
-    
+
   }
-  
-  
+
+
   simulateddata<- base::array(base::rep(0,n_data_sets*5*100),
                               c(100,5,n_data_sets))
-  
-  
+
+
   for(i in 1:n_data_sets){
     simulateddata[,1,i]<- lower_x
     simulateddata[,3,i]<- lower_y
@@ -136,7 +136,7 @@ mult_simul <- function(mm = c(68,68),
     simulateddata[,4,i]<- upper_y
     simulateddata[,5,i]<- c(Freqtable1[,,i])
   }
-  
+
   return(simulateddata)
 }
 
@@ -164,10 +164,10 @@ mult_simul <- function(mm = c(68,68),
 #'
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -206,7 +206,7 @@ mult_simul <- function(mm = c(68,68),
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' out<- em.estimate::mexi(data = simulateddata[,,1],
+#' out<- infgrouped:::mexi(data = simulateddata[,,1],
 #'            mu = mu2,
 #'            sigma = sigma2)
 #'
@@ -268,10 +268,10 @@ mexi<- function(data,mu,sigma){
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -309,7 +309,7 @@ mexi<- function(data,mu,sigma){
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' out<- em.estimate::mcovxi(data = simulateddata[,,1],
+#' out<- infgrouped:::mcovxi(data = simulateddata[,,1],
 #'              mu = mu2,
 #'              sigma = sigma2)
 #'
@@ -360,10 +360,10 @@ mcovxi<- function(data,mu,sigma){
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -400,11 +400,11 @@ mcovxi<- function(data,mu,sigma){
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' exi<- em.estimate::mexi(data=simulateddata[,,1],
+#' exi<- infgrouped:::mexi(data=simulateddata[,,1],
 #'            mu=mu2,
 #'            sigma=sigma2)
 #'
-#' out<-em.estimate:: mem(data=simulateddata[,,1],
+#' out<-infgrouped:::mem(data=simulateddata[,,1],
 #'           exi=exi)
 #'
 #' out
@@ -437,15 +437,15 @@ mem<- function(data,exi){
 #' @return returns a list where each element is an estimate for the second
 #'  moment.
 #'
-#' @examples 
+#' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
 #'
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -482,15 +482,15 @@ mem<- function(data,exi){
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' exi<- em.estimate::mexi(data=simulateddata[,,1],
+#' exi<- infgrouped:::mexi(data=simulateddata[,,1],
 #'            mu=mu2,
 #'            sigma=sigma2)
 #'
-#' ss1<- em.estimate::mcovxi(data=simulateddata[,,1],
+#' ss1<- infgrouped:::mcovxi(data=simulateddata[,,1],
 #'              mu=mu2,
 #'              sigma=sigma2)
 #'
-#' out<- em.estimate::exxest(data=simulateddata[,,1],
+#' out<- infgrouped:::exxest(data=simulateddata[,,1],
 #'              exi=exi,
 #'              ss1=ss1)
 #'
@@ -525,13 +525,13 @@ exxest<- function(data,exi,ss1){
 #' @param updmu The estimate mu.
 #' @return returns a matrix with the variance and covariance estimates.
 #'
-#' @examples 
+#' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -568,22 +568,22 @@ exxest<- function(data,exi,ss1){
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' exi<- em.estimate::mexi(data=simulateddata[,,1],
+#' exi<- infgrouped:::mexi(data=simulateddata[,,1],
 #'            mu=mu2,
 #'            sigma=sigma2)
 #'
-#' ss1<- em.estimate::mcovxi(data=simulateddata[,,1],
+#' ss1<- infgrouped:::mcovxi(data=simulateddata[,,1],
 #'              mu=mu2,
 #'              sigma=sigma2)
 #'
-#' exx<- em.estimate::exxest(data=simulateddata[,,1],
+#' exx<- infgrouped:::exxest(data=simulateddata[,,1],
 #'              exi=exi,
 #'              ss1=ss1)
 #'
-#' updmu <- em.estimate::mem(data=simulateddata[,,1],
+#' updmu <- infgrouped:::mem(data=simulateddata[,,1],
 #'              exi=exi)
 #'
-#' out<- em.estimate::est_sig(data=simulateddata[,,1],
+#' out<- infgrouped:::est_sig(data=simulateddata[,,1],
 #'             exx=exx,
 #'             ex=exi,
 #'             updmu = updmu)
@@ -646,10 +646,10 @@ est_sig<- function(data,
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -686,7 +686,7 @@ est_sig<- function(data,
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' out<- em.estimate::embivg(data=simulateddata[,,1],
+#' out<- infgrouped::embivg(data=simulateddata[,,1],
 #'              mu_init=mu2,
 #'              sigma_init=sigma2,
 #'              maxit=1000,
@@ -709,23 +709,23 @@ embivg<- function(data,
   for (i in 1:maxit){
     MU_cur<- M_cur
     SS_cur<- S_cur
-    MuNew<- em.estimate::mem(data=data,
-                exi=em.estimate::mexi(data=data,
+    MuNew<- infgrouped:::mem(data=data,
+                exi=infgrouped:::mexi(data=data,
                          mu= MU_cur,
                          sigma=SS_cur))
-    SigmaNew<- em.estimate::est_sig(data=data,
-                     exx=em.estimate::exxest(data=data,
-                                exi=em.estimate::mexi(data=data,
+    SigmaNew<- infgrouped:::est_sig(data=data,
+                     exx=infgrouped:::exxest(data=data,
+                                exi=infgrouped:::mexi(data=data,
                                          mu=MU_cur,
                                          sigma=SS_cur),
-                                ss1=em.estimate::mcovxi(data=data,
+                                ss1=infgrouped:::mcovxi(data=data,
                                            mu=MU_cur,
                                            sigma=SS_cur)),
-                     ex=em.estimate::mexi(data=data,
+                     ex=infgrouped:::mexi(data=data,
                              mu=MU_cur,
                              sigma=SS_cur),
-                     updmu=em.estimate::mem(data=data,
-                               exi=em.estimate::mexi(data=data,
+                     updmu=infgrouped:::mem(data=data,
+                               exi=infgrouped:::mexi(data=data,
                                         mu=MU_cur,
                                         sigma=SS_cur)))
 
@@ -736,7 +736,7 @@ embivg<- function(data,
     D1<- base::abs(base::mean(diff1))
     D2<- base::abs(base::mean(diff2))
 
-    if(D1<tol1 & D2<tol2){
+    if( D1<tol1 & D2<tol2 | (is.na(MuNew) | is.na(SigmaNew)) ){
       flag<- 1 ;break
       }
 
@@ -756,66 +756,6 @@ embivg<- function(data,
 
 ################################################################################
 
-# caso trivariate DEVO COLOCAR O exEMPLO? --------------------------------------
-# mm<- c(68,68,68) ## The vector of mu that we want to simulate from
-# ss<- matrix(c(3,2,1.5,2,4,2.5,1.5,2.5,5),3,3) ## The covariance matrix for the simulation
-#
-# ssdata<- array(rep(0,3000*3),c(3000,3))
-# ssdata<- mvrnorm(n=3000,mm,ss)
-#
-# x<- rep(0,3000)
-# y<- rep(0,3000)
-# z<- rep(0,3000)
-#
-# x<- ssdata[,1]
-# y<- ssdata[,2]
-# z<- ssdata[,3]
-#
-# Freqtable1<- array(rep(0,8*8*8),c(8,8,8))
-# x_cut<- cut(x,breaks=c(-Inf,65,66,67,68,69,70,71,Inf))
-# y_cut<- cut(y,breaks=c(-Inf,63,65,67,69,71,73,75,Inf))
-# z_cut<- cut(z,breaks=c(-Inf,64,65.5,67,68.5,70,71.5,73,Inf))
-#
-# Freqtable1<- table(x_cut,y_cut,z_cut)
-#
-#
-# simulateddata3<- array(rep(0,7*512),c(512,7))
-# lower_x<- rep(c(-Inf,65,66,67,68,69,70,71),64)
-# ly<- c(rep(-Inf,8),rep(63,8),rep(65,8),rep(67,8),rep(69,8),rep(71,8),rep(73,8),rep(75,8))
-# lower_y<- rep(ly,8)
-# lower_z<- c(rep(-Inf,64),rep(64,64),rep(65.5,64),rep(67,64),rep(68.5,64),rep(70,64),rep(71.5,64),rep(73,64))
-#
-# upper_x<- rep(c(65,66,67,68,69,70,71,Inf),64)
-# uy<- c(rep(63,8),rep(65,8),rep(67,8),rep(69,8),rep(71,8),rep(73,8),rep(75,8),rep(Inf,8))
-# upper_y<- rep(uy,8)
-# upper_z<- c(rep(64,64),rep(65.5,64),rep(67,64),rep(68.5,64),rep(70,64),
-#             rep(71.5,64),rep(73,64),rep(Inf,64))
-#
-# simulateddata3[,1]<- lower_x
-# simulateddata3[,3]<- lower_y
-# simulateddata3[,5]<- lower_z
-# simulateddata3[,2]<- upper_x
-# simulateddata3[,4]<- upper_y
-# simulateddata3[,6]<- upper_z
-# simulateddata3[,7]<- c(Freqtable1)
-#
-#
-# mu2<- c(67,67,67)# case trivariate??
-# sigma2<- matrix(c(3.1,2.2,1.6,2.2,4.3,2.45,1.6,2.45,4.8),3,3) # case trivariate??
-#
-# out13<- embivg(data=simulateddata3,
-#                mu_init=mu2,
-#                sigma_init=sigma2,
-#                maxit=1000,
-#                tol1=1e-4,
-#                tol2=1e-3) ## run the embivg funtion to see the
-# ## estimate of the parameters using the EM algorithm
-# out13 ## see the output
-# unlist(out13) ## unlist the output
-################################################################################
-
-
-
 
 
 
@@ -833,10 +773,10 @@ embivg<- function(data,
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -871,7 +811,7 @@ embivg<- function(data,
 #' mu <- c(67,67)
 #' sigma <- base::matrix(c(3.1, 2.16, 2.16, 6.05), 2, 2)
 #'
-#' out<- em.estimate::zmcem_mult(data=simulateddata[,,1],
+#' out<- infgrouped:::zmcem_mult(data=simulateddata[,,1],
 #'                  mu=mu,
 #'                  sigma=sigma)
 #'
@@ -929,10 +869,10 @@ zmcem_mult<- function(data,
 #'
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -967,11 +907,11 @@ zmcem_mult<- function(data,
 #' mu <- c(67,67)
 #' sigma <- matrix(c(3.1, 2.16, 2.16, 6.05), 2, 2)
 #'
-#' generated_sample<- em.estimate::zmcem_mult(data=simulateddata[,,1],
+#' generated_sample<- infgrouped:::zmcem_mult(data=simulateddata[,,1],
 #'                               mu=mu,
 #'                               sigma=sigma)
 #'
-#' out<- em.estimate::mu_zmcem_mult(data=simulateddata[,,1],
+#' out<- infgrouped:::mu_zmcem_mult(data=simulateddata[,,1],
 #'                      generated_sample=generated_sample)
 #'
 #'
@@ -1022,10 +962,10 @@ mu_zmcem_mult<- function(data,
 #'
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -1060,15 +1000,15 @@ mu_zmcem_mult<- function(data,
 #' mu <- c(67,67)
 #' sigma <- base::matrix(c(3.1, 2.16, 2.16, 6.05), 2, 2)
 #'
-#' generated_sample<- em.estimate::zmcem_mult(data=simulateddata[,,1],
+#' generated_sample<- infgrouped:::zmcem_mult(data=simulateddata[,,1],
 #'                               mu=mu,
 #'                               sigma=sigma)
 #'
-#' mu_vector<- em.estimate::mu_zmcem_mult(data=simulateddata[,,1],
+#' mu_vector<- infgrouped:::mu_zmcem_mult(data=simulateddata[,,1],
 #'                           generated_sample=generated_sample)
 #'
 #'
-#' out<- em.estimate::sigma_zmcem_mult(data=simulateddata[,,1],
+#' out<- infgrouped:::sigma_zmcem_mult(data=simulateddata[,,1],
 #'                        generated_sample = generated_sample,
 #'                        mu_vector = mu_vector)
 #'
@@ -1137,10 +1077,10 @@ sigma_zmcem_mult<- function(data,
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -1176,7 +1116,7 @@ sigma_zmcem_mult<- function(data,
 #' sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 #'
 #'
-#' out<- em.estimate::mcem_mult(data=simulateddata[,,1],
+#' out<- infgrouped::mcem_mult(data=simulateddata[,,1],
 #'               mu_init=mu2,
 #'               sigma_init=sigma2,
 #'               maxit=1000,
@@ -1204,21 +1144,21 @@ mcem_mult<- function(data,
     MU_cur<- M_cur
     SS_cur<- S_cur
 
-    MuNew<- em.estimate::mu_zmcem_mult(data=data,
+    MuNew<- infgrouped:::mu_zmcem_mult(data=data,
                           generated_sample=
-                            em.estimate::zmcem_mult(data=data,
+                            infgrouped:::zmcem_mult(data=data,
                                         mu=MU_cur,
                                         sigma=SS_cur))
 
-    SigmaNew<- em.estimate::sigma_zmcem_mult(data=data,
+    SigmaNew<- infgrouped:::sigma_zmcem_mult(data=data,
                                 generated_sample=
-                                  em.estimate::zmcem_mult(data=data,
+                                  infgrouped:::zmcem_mult(data=data,
                                              mu=MU_cur,
                                              sigma=SS_cur),
                                 mu_vector=
-                                  em.estimate::mu_zmcem_mult(data=data,
+                                  infgrouped:::mu_zmcem_mult(data=data,
                                       generated_sample=
-                                        em.estimate::zmcem_mult(data=data,
+                                        infgrouped:::zmcem_mult(data=data,
                                                             mu=MU_cur,
                                                             sigma=SS_cur)))
 
@@ -1231,7 +1171,9 @@ mcem_mult<- function(data,
     D1<- base::abs(base::mean(diff1))
     D2<- base::abs(base::mean(diff2))
 
-    if(D1<tol1 & D2<tol2){flag<- 1 ;break}
+    if( D1<tol1 & D2<tol2 | (is.na(MuNew) | is.na(SigmaNew)) ){
+      flag<- 1 ;break
+    }
 
     M_cur<- Mu_new
 
@@ -1275,10 +1217,10 @@ mcem_mult<- function(data,
 #' @examples
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -1313,7 +1255,7 @@ mcem_mult<- function(data,
 #'
 #' theta<- c(65,65,3,6,2.12132)
 #'
-#' out<- em.estimate::mult_llik(data = simulateddata[,,1],
+#' out<- infgrouped:::mult_llik(data = simulateddata[,,1],
 #'                 theta = theta)
 #'
 #' out
@@ -1382,12 +1324,12 @@ mult_llik<- function(data,
 #'
 #'
 #' library(MASS)
-#' library(em.estimate)
+#' library(infgrouped)
 #' library(tmvtnorm)
 #'
 #' set.seed(12345)
 #'
-#' simulateddata = em.estimate::mult_simul(mm = c(68,68),
+#' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
 #'                           n_data_sets = 1,
 #'                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -1423,7 +1365,7 @@ mult_llik<- function(data,
 #'
 #' theta<- c(65,65,3,6,2.12132)
 #'
-#' out = em.estimate::mle_exact_mult(theta<- c(65,65,3,6,2.12132),
+#' out = infgrouped::mle_exact_mult(theta<- c(65,65,3,6,2.12132),
 #'                      data=simulateddata[,,1])
 #'
 #' out

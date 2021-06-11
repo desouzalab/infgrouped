@@ -15,7 +15,7 @@ lower limits, second column upper limits, and third column observed
 frequencies.}
 }
 \value{
-Simulate data about each specific interval and assign it to the 
+Simulate data about each specific interval and assign it to the
  simulate matrix.
 }
 \description{
@@ -25,13 +25,14 @@ E-Step for Mu estimation, Simulating Z's
 
  library(truncnorm)
 
- simdataaaa <- em.univ::univ_simul(ncol_matrix=1,
+ simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
                          n=50,
                          nclass = 10,
                          mean = 68,
                          sd = 1.80,
                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
- 
- zm_matriz <- em.univ::zmcem(theta=c(67,2),data = simdataaaa$simul_data[,,1])
+
+ zm_matriz <- infgrouped:::zmcem(theta=c(67,2),
+ data = simdataaaa$simul_data[,,1])
  zm_matriz
 }

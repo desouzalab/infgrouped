@@ -24,18 +24,20 @@ Return sigma which are the estimates of variance in E-step.
 E-Step estimate the parameter of sigma.
 }
 \examples{
- simdataaaa <- em.univ::univ_simul(ncol_matrix=1,
+ simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
                          n=50,
                          nclass = 10,
                          mean = 68,
                          sd = 1.80,
                          fr_breaks=c(62,64,66,68,70,72,74,76,78))
- 
- zm_matriz <- em.univ::zmcem(theta=c(67,2),data = simdataaaa$simul_data[,,1])
- 
- mu_estimate <- em.univ::mumcem(data = simdataaaa$simul_data[,,1], simz = zm_matriz)
- 
- sigma_estimate <- em.univ::sigmamcem(data = simdataaaa$simul_data[,,1],
+
+ zm_matriz <- infgrouped:::zmcem(theta=c(67,2),
+                                 data = simdataaaa$simul_data[,,1])
+
+ mu_estimate <- infgrouped:::mumcem(data = simdataaaa$simul_data[,,1],
+                                    simz = zm_matriz)
+
+ sigma_estimate <- infgrouped:::sigmamcem(data = simdataaaa$simul_data[,,1],
                             simz = zm_matriz,
                             mupd = mu_estimate)
  sigma_estimate

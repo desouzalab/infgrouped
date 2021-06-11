@@ -26,10 +26,10 @@ In this function we will calculate the log-likelihood function.
 \examples{
 
 library(MASS)
-library(em.univ)
+library(infgrouped)
 library(tmvtnorm)
 
-simulateddata = em.univ::mult_simul(mm = c(68,68),
+simulateddata = infgrouped::mult_simul(mm = c(68,68),
                           ss = base::matrix(c(3,2,2,6),2,2) ,
                           n_data_sets = 1,
                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -64,7 +64,7 @@ simulateddata = em.univ::mult_simul(mm = c(68,68),
 
 theta<- c(65,65,3,6,2.12132)
 
-out<- em.univ::mult_llik(data = simulateddata[,,1],
+out<- infgrouped:::mult_llik(data = simulateddata[,,1],
                 theta = theta)
 
 out

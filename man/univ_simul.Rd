@@ -41,16 +41,16 @@ Generating data from a gaussian
 }
 \examples{
 
- library(em.univ)
+ library(infgrouped)
  library(stats)
- 
- simdataaaa <- em.univ::univ_simul(ncol_matrix=1,
+
+ simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
                        n=50,
                        nclass = 10,
                        mean = 68,
                        sd = 1.80,
                        fr_breaks=c(62,64,66,68,70,72,74,76,78))
-                       
+
  simdataaaa
- 
+
 }

@@ -13,7 +13,7 @@ em(bl, bu, freq, theta_init, maxit = 1000, tol1 = 0.001, tol2 = 1e-04)
 
 \item{freq}{Frequency over the intervals, values in vector.}
 
-\item{theta_init}{The initial values of the parameters, for mu and sigma. 
+\item{theta_init}{The initial values of the parameters, for mu and sigma.
 Vector with two values.}
 
 \item{maxit}{The maximum number of iteration of the EM algorithm.}
@@ -33,18 +33,18 @@ Maximization step of the EM algorithm
 }
 \examples{
 
- library(em.univ)
+ library(infgrouped)
 
 
  output2 <- base::list()
- simdataaaa <- em.univ::univ_simul(ncol_matrix=1,
+ simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
                        n=50,
                        nclass = 10,
                        mean = 68,
                        sd = 1.80,
                        fr_breaks=c(62,64,66,68,70,72,74,76,78))
 
- output2 <- em.univ::em(bl=simdataaaa$simul_data[,1,1],
+ output2 <- infgrouped::em(bl=simdataaaa$simul_data[,1,1],
                bu=simdataaaa$simul_data[,2,1],
                freq=simdataaaa$simul_data[,3,1],
                theta_init=c(67,2),

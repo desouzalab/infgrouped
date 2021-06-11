@@ -26,10 +26,10 @@ matrix.
 \examples{
 
 library(MASS)
-library(em.univ)
+library(infgrouped)
 library(tmvtnorm)
 
-simulateddata = em.univ::mult_simul(mm = c(68,68),
+simulateddata = infgrouped::mult_simul(mm = c(68,68),
                           ss = base::matrix(c(3,2,2,6),2,2) ,
                           n_data_sets = 1,
                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
@@ -67,7 +67,7 @@ mu2<- c(67,67)
 sigma2<- base::matrix(c(3.1,2.2,2.2,4.3),2,2)
 
 
-out<- em.univ::mcovxi(data = simulateddata[,,1],
+out<- infgrouped:::mcovxi(data = simulateddata[,,1],
              mu = mu2,
              sigma = sigma2)
 

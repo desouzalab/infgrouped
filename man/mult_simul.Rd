@@ -50,10 +50,10 @@ The function stimulates group data for the multivariate case.
 \examples{
 
 library(MASS)
-library(em.univ)
+library(infgrouped)
 library(tmvtnorm)
 
-simulateddata = em.univ::mult_simul(mm = c(68,68),
+simulateddata = infgrouped::mult_simul(mm = c(68,68),
                           ss = base::matrix(c(3,2,2,6),2,2) ,
                           n_data_sets = 1,
                           breaks_x = c(-Inf,64,65,66,67,68,69,70,71,72,Inf),
