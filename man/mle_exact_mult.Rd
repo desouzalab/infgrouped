@@ -31,6 +31,7 @@ covariance).
 library(MASS)
 library(infgrouped)
 library(tmvtnorm)
+library(mvtnorm)
 
 set.seed(12345)
 

@@ -41,10 +41,17 @@ mest<- function(theta,bl,bu,freq){
     astar[i]<- (bl[i]-theta[1])/theta[2]
   }
 
+  dinom<- NULL
   for(i in 1:base::length(bl)){
-    Aj[i]<- theta[1] - theta[2]*
-      ((stats::dnorm(bstar[i]) - stats::dnorm(astar[i]))/
-         ((stats::pnorm(bstar[i]) - stats::pnorm(astar[i]))) )
+    dinom[i]<- (stats::pnorm(bstar[i])-stats::pnorm(astar[i]))
+    if(dinom[i]==0) {
+      Aj[i]<- theta[1]-theta[2]*((stats::dnorm(bstar[i])-
+                                    stats::dnorm(astar[i]))/0.0001)
+      }
+    else {
+      Aj[i]<- theta[1]-theta[2]*((stats::dnorm(bstar[i])-
+                                    stats::dnorm(astar[i]))/dinom[i])
+      }
   }
 
   M <- base::sum(Aj*freq)/base::sum(freq)
@@ -105,12 +112,20 @@ ssest<- function(theta,bl,bu,muupdate,freq){
 
 
   for(i in 1:base::length(bl)){
-    Bj[i]<- theta[2]^2*
-      (1-(bstar[i]*stats::dnorm(bstar[i]) - astar[i]*stats::dnorm(astar[i]))/
-         (stats::pnorm(bstar[i]) - stats::pnorm(astar[i])))+
-      (muupdate - theta[1])^2 + (2*theta[2]*(muupdate-theta[1])*
-         ((stats::dnorm(bstar[i]) - stats::dnorm(astar[i]))/
-            (stats::pnorm(bstar[i]) - stats::pnorm(astar[i]))))
+    dinom[i]<- (stats::pnorm(bstar[i])-stats::pnorm(astar[i]))
+    if(dinom[i]==0) {
+      Bj[i]<- theta[2]^2*(1-(bstar[i]*stats::dnorm(bstar[i])-
+                               astar[i]*stats::dnorm(astar[i]))/0.0001)
+    +(muupdate-theta[1])^2+
+      (2*theta[2]*(muupdate-theta[1])*((stats::dnorm(bstar[i])-
+                                          stats::dnorm(astar[i]))/0.0001))
+      }
+    else{
+      Bj[i]<- theta[2]^2*(1-(bstar[i]*stats::dnorm(bstar[i])-
+                               astar[i]*stats::dnorm(astar[i]))/dinom[i])
+    +(muupdate-theta[1])^2+
+      (2*theta[2]*(muupdate-theta[1])*((stats::dnorm(bstar[i])-
+                                          stats::dnorm(astar[i]))/dinom[i]))}
 
   }
 
@@ -168,13 +183,14 @@ em<- function(bl,bu,freq,theta_init,maxit=1000,tol1=1e-3,tol2=1e-4){
     cur<- c(Mu_cur,S_cur)
     munew<- infgrouped:::mest(theta=cur,bl,bu,freq)
     ssnew<- infgrouped:::ssest(theta=cur,bl,bu,
-                  muupdate=mest(theta=cur,bl,bu,freq) ,freq)
+                  muupdate=infgrouped:::mest(theta=cur,bl,bu,freq) ,freq)
 
     Mu_new <- munew
     S_new <- base::sqrt(ssnew)
     new_step<- c(Mu_new,S_new)
 
-    if(base::abs(cur[1]-new_step[1])<tol1 & base::abs(cur[2]-new_step[2])<tol2){
+    if(base::abs(cur[1]-new_step[1])<tol1 &
+       base::abs(cur[2]-new_step[2])<tol2){
       flag<-1 ;break
       }
     Mu_cur<- Mu_new

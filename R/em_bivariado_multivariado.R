@@ -1219,6 +1219,7 @@ mcem_mult<- function(data,
 #' library(MASS)
 #' library(infgrouped)
 #' library(tmvtnorm)
+#' library(mvtnorm)
 #'
 #' simulateddata = infgrouped::mult_simul(mm = c(68,68),
 #'                           ss = base::matrix(c(3,2,2,6),2,2) ,
@@ -1326,6 +1327,7 @@ mult_llik<- function(data,
 #' library(MASS)
 #' library(infgrouped)
 #' library(tmvtnorm)
+#' library(mvtnorm)
 #'
 #' set.seed(12345)
 #'
