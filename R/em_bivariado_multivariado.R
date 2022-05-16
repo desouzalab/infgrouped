@@ -832,7 +832,9 @@ zmcem_mult<- function(data,
   upperb<- NULL
   for (i in 1:ind){
     if (i%%2!=0) {lowerb<- base::append(lowerb,i)}
-    else {upperb<- base::append(upperb,i)}
+    else {
+      upperb<- base::append(upperb,i)
+      }
 
   }
   data1<- as.matrix(data)
@@ -1290,8 +1292,15 @@ mult_llik<- function(data,
                 upper=data1[i,c(upperb)],
                 mean=mu,sigma=sig)
 
-    if (a[1]==0) {a<- 1e-03}
-    else {a<- a[1]}
+    if (a[1]==0) {
+
+      a<- 1e-03
+    }
+
+    else {
+      a<- a[1]
+    }
+
     b<- b+data[i,base::ncol(data)]*base::log(a)
 
   }

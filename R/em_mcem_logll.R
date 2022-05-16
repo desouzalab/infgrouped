@@ -197,7 +197,10 @@ em<- function(bl,bu,freq,theta_init,maxit=1000,tol1=1e-3,tol2=1e-4){
     S_cur<- S_new
   }
 
-  if(!flag) warning
+  if(!flag){
+    warning("Didn't Converge \n")
+  }
+
   updateres<- base::list("mu_estimate" = Mu_cur,
                          "sigma_estimate" = (S_cur)^2)
 
@@ -205,6 +208,212 @@ em<- function(bl,bu,freq,theta_init,maxit=1000,tol1=1e-3,tol2=1e-4){
 }
 
 ################################################################################
+
+### Standard Errors For EM Algorithm -------------------------------------------
+
+#' Standard Errors For EM Algorithm
+#'
+#' @param thetaupd Output of the EM algorithm function.
+#' @param bl Lower bound of the intervals, values in vector, starting from -inf.
+#' @param bu Upper bound of the intervals, values in vector, ending with +inf.
+#' @param data Matrix of the raw data used in the estimation in the EM
+#' algorithm.
+#' @return Returns a matrix with the standard errors of the errors of the EM
+#' algorithm estimates.
+#' @export
+#' @examples
+#'
+#'set.seed(1245)
+#'#simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
+#'simdata50m15 <- univ_simul(ncol_matrix=500,
+#'                         n=50,
+#'                         nclass = 15,
+#'                         mean = 68,
+#'                         sd = 1.80,
+#'                         fr_breaks=c(59.5,61,62.5,64,65.5,67,68.5,70,71.5,
+#'                                     73,74.5,76,77.5,79))
+#'
+#'
+#'  output50m15em<- matrix(rep(0,2*500),
+#'                         ncol=2)
+#'
+#'  for(i in 1:500){
+#'
+#'    output2 <- infgrouped::em(bl=simdata50m15$simul_data[,1,i],
+#'                 bu=simdata50m15$simul_data[,2,i],
+#'                 freq=simdata50m15$simul_data[,3,i],
+#'                 theta_init=c(67,2),
+#'                 maxit = 100,
+#'                 tol1=1e-3,
+#'                 tol2=1e-4)
+#'
+#'  output50m15em[i,1] <- output2$mu_estimate
+#'  output50m15em[i,2] <- output2$sigma_estimate
+#'
+#'  }
+#'
+#'output50m15em
+#'
+#'se_em_50<- matrix(rep(0,2*nrow(output50m15em)),ncol=2)
+#'
+#'for(i in 1:nrow(output50m15em)){
+#'  se_em_50[i,]<- infgrouped::muvarstd(thetaupd=c(output50m15em[i,1],
+#'                                     sqrt(output50m15EM[i,2])),
+#'                          bl=simdata50m15$simul_data[,1,i],
+#'                          bu=simdata50m15$simul_data[,2,i],
+#'                          data=simdata50m15$simul_data[,,i])
+#'
+#'}
+#'
+#'ci_mu_50<- matrix(rep(0,2*nrow(output50m15em)),
+#'                  nrow=nrow(output50m15em),ncol=2)
+#'colnames(ci_mu_50)<- c("lower bound","upper bound")
+#'
+#'ci_sigma2_50<- matrix(rep(0,2*nrow(output50m15em)),
+#'                      nrow=nrow(output50m15em),ncol=2)
+#'colnames(ci_sigma2_50)<- c("lower bound","upper bound")
+#'
+#'
+#'for(i in 1:nrow(output50m15em)){
+#'  ci_mu_50[i,1]<- output50m15em[i,1]-(se_em_50[i,1]*qnorm(0.975))
+#'  ci_mu_50[i,2]<- output50m15em[i,1]+(se_em_50[i,1]*qnorm(0.975))
+#'
+#'}
+#'
+#'
+#'for(i in 1:nrow(output50m15em)){
+#'  ci_sigma2_50[i,1]<- output50m15em[i,2]-(se_em_50[i,2]*qnorm(0.975))
+#'  ci_sigma2_50[i,2]<- output50m15em[i,2]+(se_em_50[i,2]*qnorm(0.975))
+#'
+#'}
+#'
+#'
+#'true_mu<- 68
+#'true_sigma2<- (1.80)^2
+#'
+#'
+#'empirical_conf_mu_50<- 0
+#'empirical_conf_sigma2_50<- 0
+#'
+#'for(i in 1:nrow(output50m15em)){
+#'
+#'  if(true_mu >= ci_mu_50[i,1] & true_mu <= ci_mu_50[i,2]){
+#'
+#'    empirical_conf_mu_50<- empirical_conf_mu_50+1
+#'  }
+#'
+#'  if(true_sigma2>=ci_sigma2_50[i,1] & true_sigma2<=ci_sigma2_50[i,2]){
+#'
+#'    empirical_conf_sigma2_50<- empirical_conf_sigma2_50+1
+#'
+#'  }
+#'
+#'}
+#'
+#'emp_conf_mu_prop<- c(empirical_conf_mu_50/500)
+#'emp_conf_sigma2_prop<- c(empirical_conf_sigma2_50/500)
+#'
+#'n<- c(50)
+#'emp_ci_mu_prop<- emp_conf_mu_prop*100
+#'emp_ci_sigma2_prop<- emp_conf_sigma2_prop*100
+#'
+#'sd_mu <- c(sd(output50m15em[,1]))
+#'ave_mu <- c(mean(output50m15em[,1]))
+#'
+#'se_mu_hat<- c(mean(se_em_50[,1]))
+#'sd_var<- c(sd(output50m15em[,2]))
+#'
+#'
+#'ave_var<- c(mean(output50m15em[,2]))
+#'se_sigma2_hat<- c(mean(se_em_50[,2]))
+#'
+#'
+#'
+#'std_mu_estimates<- cbind(n,ave_mu,sd_mu,se_mu_hat,emp_ci_mu_prop)
+#'std_sigma2_estimates<- cbind(n,ave_var,sd_var,se_sigma2_hat,emp_ci_sigma2_prop)
+#'
+#'std_sigma2_estimates
+#'std_mu_estimates
+#'
+#'
+
+
+muvarstd<- function(thetaupd,
+                    bl,
+                    bu,
+                    data){
+  Wj<- base::rep(0,base::length(bl))
+  WjN<- base::rep(0,base::length(bl))
+
+  astar<- base::rep(0,base::length(bl))
+  bstar<- base::rep(0,base::length(bl))
+  Mstdj<- base::rep(0,base::length(bl))
+  for(i in 1:base::length(bl)){
+    bstar[i]<- (bu[i]-thetaupd[1])/thetaupd[2]
+    astar[i]<- (bl[i]-thetaupd[1])/thetaupd[2]
+
+  }
+  dinom1<- NULL
+  astar[1]<- -1000
+  bstar[base::length(bl)]<- 1000
+  for(i in 1:base::length(bl)){
+
+    dinom1[i]<- (stats::pnorm(bstar[i])-stats::pnorm(astar[i]))
+    if(dinom1[i]==0) {
+      WjN[i]<- (-thetaupd[2])*
+        ((stats::dnorm(bstar[i])-stats::dnorm(astar[i]))/0.0001)
+    }
+    else {
+      WjN[i]<- (-thetaupd[2])*
+        ((stats::dnorm(bstar[i])-stats::dnorm(astar[i]))/dinom1[i])
+    }
+  }
+
+  Ej2<- base::rep(0,base::length(bl))
+
+  dinom<- NULL
+
+  astar[1]<- -1000
+  bstar[base::length(bl)]<- 1000
+
+  for(i in 1:base::length(bl)){
+
+    dinom[i]<- (stats::pnorm(bstar[i])-stats::pnorm(astar[i]))
+    if(dinom[i]==0) {
+      Ej2[i]<- (bstar[i]*
+                  stats::dnorm(bstar[i])-astar[i]*
+                  stats::dnorm(astar[i]))/0.0001
+    }
+    else{
+      Ej2[i]<- (bstar[i]*
+                  stats::dnorm(bstar[i])-astar[i]*
+                  stats::dnorm(astar[i]))/dinom[i]
+    }
+  }
+  SMU<- WjN/(thetaupd[2]^2)
+  SVAR<- (-1/(2*(thetaupd[2]^2)))*Ej2
+  Sj1<- base::rbind(SMU,SVAR)
+  IME<- base::array(base::rep(0,2*2*(base::nrow(data))),
+                    c(2,2,base::nrow(data)))
+  for(i in 1:base::nrow(data)){
+    IME[,,i]<- Sj1[,i]%*%t(Sj1[,i])*data[i,3]
+  }
+
+  InfME<- base::apply(IME,c(1,2),sum)
+
+  var_EM_est<- base::solve(InfME)
+  std_EM_est<- base::sqrt(base::diag(var_EM_est))
+
+  return(std_EM_est)
+
+}
+
+################################################################################
+
+
+
+
+
 
 ### func univ_simul (gerando simdata2) -----------------------------------------
 
@@ -215,7 +424,7 @@ em<- function(bl,bu,freq,theta_init,maxit=1000,tol1=1e-3,tol2=1e-4){
 #' @param n A number, number of observations in each sample.
 #' @param nclass A number, number of classes on the contingency table.
 #' @param mean A number, parameter mu value to generate data.
-#' @param sd A number, parameter sigma value to generate data.
+#' @param sd A number, parameter sigma (standard error) value to generate data.
 #' @param fr_breaks A vector, vector containing the values of the referenced
 #'  as counts.
 #' @return Returns a list with two objects, the first "simul_data" returns
@@ -257,20 +466,22 @@ univ_simul <- function(ncol_matrix=30,
   }
 
   ### ### ### ###
-  Fr<- base::matrix(rep(0,10*ncol(sim2)),
-              ncol=ncol(sim2))
+  Fr<- base::matrix(0,
+                    ncol= ncol_matrix,
+                    nrow = length(fr_breaks)+1)
+
 
   for(i in 1:base::ncol(sim2)){
-    Fr[,i]<- base::table(cut(sim2[,i],
+    Fr[,i]<- base::table(base::cut(sim2[,i],
                        breaks=c(-Inf,fr_breaks,Inf)))
 
   }
   ### ### ### ###
 
-  simdata2<- base::array(rep(0,10*3*ncol_matrix),
+  simdata2<- base::array(base::rep(0,10*3*ncol_matrix),
                    c(nclass,3,ncol_matrix))
 
-  med2<- base::array(rep(0,10*2*ncol_matrix),
+  med2<- base::array(base::rep(0,10*2*ncol_matrix),
                c(nclass,2,ncol_matrix))
 
   for(i in 1:base::ncol(sim2)){
@@ -291,6 +502,97 @@ univ_simul <- function(ncol_matrix=30,
 
 }
 ################################################################################
+
+
+### Galton Data ----------------------------------------------------------------
+
+#' Galton Data
+#'
+#' @return Returns a list with three formats of Galton data, the first is
+#' the parents data in the frequency table, the second is the children data
+#' in the frequency table and the third is the raw format of the data.
+#' @export
+#' @examples
+#'
+#'
+#' galton_data_formats = galton_data()
+#'
+#'
+
+
+library(HistData)
+library(utils)
+
+
+galton_data<- function(){
+
+  library(HistData)
+
+  utils::data(Galton)
+  data_galton_parent <- Galton
+  data_galton_parent <- data_galton_parent$parent
+
+  freq <- base::table(base::cut(data_galton_parent,
+                                breaks=c(-Inf,
+                                         unique(data_galton_parent),
+                                         Inf)))
+  freq <- as.data.frame(freq)
+
+  intervalo <- base::unique(data_galton_parent)
+  intervalo <- intervalo[base::order(intervalo)]
+
+  breaks <- c(-Inf,
+              intervalo,
+              Inf)
+
+  TL <- breaks[-13]
+  TU <- breaks[-1]
+
+  data_galton_parent <- base::data.frame("TL_parent" = TL,
+                                         "TU_parent" = TU,
+                                         "freq" = freq$Freq)
+
+
+  ########## ########## ##########
+
+  data_galton_children <- Galton
+  data_galton_children <- data_galton_children$child
+
+  freq <- base::table(base::cut(
+    data_galton_children,breaks=c(-Inf,
+                                  unique(data_galton_children),
+                                  Inf)))
+
+  freq <- as.data.frame(freq)
+
+
+  intervalo <- base::unique(data_galton_children)
+  intervalo <- intervalo[base::order(intervalo)]
+
+
+  breaks <- c(-Inf,
+              intervalo,
+              Inf)
+
+  TL <- breaks[-16]
+  TU <- breaks[-1]
+
+  data_galton_children <- base::data.frame("TL_parent" = TL,
+                                           "TU_parent" = TU,
+                                           "freq" = freq$Freq)
+
+
+  final_list <- base::list("data_galton_children" = data_galton_children,
+                           "data_galton_parent" = data_galton_parent,
+                           "data_galton" = Galton)
+
+  detach("package:HistData", unload = TRUE)
+  return(final_list)
+
+}
+
+################################################################################
+
 
 
 
@@ -513,6 +815,259 @@ mcem<- function(data,theta_init,maxit=1000,tol1=1e-2,tol2=1e-3){
 
   return(update)
 }
+################################################################################
+
+
+### Standard Errors For MCEM Algorithm -----------------------------------------
+
+#' Standard Errors For EM Algorithm
+#'
+#' @param thetaupd Output of the EM algorithm function.
+#' @param bl Lower bound of the intervals, values in vector, starting from -inf.
+#' @param bu Upper bound of the intervals, values in vector, ending with +inf.
+#' @param data Matrix of the raw data used in the estimation in the EM
+#' algorithm.
+#' @return Returns a matrix with the standard errors of the errors of the MCEM
+#' algorithm estimates. First column is the standard deviation and the
+#' second column is the variance.
+#' @export
+#' @examples
+#'
+#'
+#'outputmcem50m15<- matrix(rep(0,2*500),ncol=2)
+#'colnames(outputmcem50m15)<- c("mean","var")
+#'
+#'set.seed(1245)
+#'simdata50m15 <- univ_simul(ncol_matrix=500,
+#'                        n=50,
+#'                        nclass = 15,
+#'                        mean = 68,
+#'                        sd = 1.80,
+#'                        fr_breaks=c(59.5,61,62.5,64,65.5,67,68.5,70,71.5,
+#'                                    73,74.5,76,77.5,79))
+#'
+#'
+#'for(i in 1:500){
+#'  outputmcem2 <- infgrouped::mcem(data=simdata50m15$simul_data[,,i],
+#'                             theta_init=c(67,2),
+#'                             maxit = 1000,
+#'                             tol1=1e-2,
+#'                             tol2=1e-3)
+#'
+#'  outputmcem50m15[i,1] <- outputmcem2$mu_estimate
+#'  outputmcem50m15[i,2] <- outputmcem2$sigma_estimate
+#'
+#'
+#'}
+#'
+#'
+#'theta50<-matrix(rep(0,2*nrow(output50m15em)),ncol=2)
+#'for(i in 1:nrow(output50m15em)){
+#'  theta50[i,]<- c(output50m15em[i,1],
+#'                  sqrt(output50m15em[i,2]))
+#'}
+#'
+#'
+#'se_mcem50m15<- matrix(rep(0,2*nrow(output50m15em)),ncol=2)
+#'for(i in 1:nrow(output50m15em)){
+#'  se_mcem50m15[i,]<-  zsimmcem(theta50[i,],
+#'                               data=simdata50m15$simul_data[,,i])
+#'}
+#'
+#'# remove cases with not converge
+#'errors_lines_c1 = which(is.na(se_mcem50m15[,1]))
+#'errors_lines_c2 = which(is.na(se_mcem50m15[,2]))
+#'errors_lines = c(errors_lines_c1,errors_lines_c2)
+#'se_mcem50m15 = se_mcem50m15[-errors_lines, ]
+#'outputmcem50m15 = outputmcem50m15[-errors_lines, ]
+#'
+#'trueval<- c(68,(1.8)^2)
+#'
+#'ci_mu_50_mcem<- matrix(rep(0,2*nrow(outputmcem50m15)),
+#'                       nrow=nrow(outputmcem50m15),
+#'                       ncol=2)
+#'
+#'colnames(ci_mu_50_mcem)<- c("lower bound",
+#'                            "upper bound")
+#'
+#'ci_sigma2_50_mcem<- matrix(rep(0,2*nrow(outputmcem50m15)),
+#'                           nrow=nrow(outputmcem50m15),
+#'                           ncol=2)
+#'
+#'colnames(ci_sigma2_50_mcem)<- c("lower bound",
+#'                                "upper bound")
+#'
+#'
+#'for(i in 1:nrow(outputmcem50m15)){
+#'
+#'  ci_mu_50_mcem[i,1]<- outputmcem50m15[i,1]-(se_mcem50m15[i,1]*qnorm(0.975))
+#'  ci_mu_50_mcem[i,2]<- outputmcem50m15[i,1]+(se_mcem50m15[i,1]*qnorm(0.975))
+#'
+#'}
+#'
+#'for(i in 1:nrow(outputmcem50m15)){
+#'
+#'  ci_sigma2_50_mcem[i,1]<- outputmcem50m15[i,2]-(se_mcem50m15[i,2]*qnorm(0.975))
+#'  ci_sigma2_50_mcem[i,2]<- outputmcem50m15[i,2]+(se_mcem50m15[i,2]*qnorm(0.975))
+#'
+#'}
+#'
+#'true_mu<- 68
+#'true_sigma2<- (1.8)^2
+#'
+#'
+#'empirical_conf_mu_50_mcem<- 0
+#'empirical_conf_sigma2_50_mcem<- 0
+#'
+#'for(i in 1:nrow(outputmcem50m15)){
+#'
+#'  if(true_mu >= ci_mu_50_mcem[i,1] &
+#'     true_mu <= ci_mu_50_mcem[i,2]){
+#'
+#'    empirical_conf_mu_50_mcem<- empirical_conf_mu_50_mcem+1
+#'
+#'  }
+#'
+#'  if(true_sigma2 >= ci_sigma2_50_mcem[i,1] &
+#'     true_sigma2 <= ci_sigma2_50_mcem[i,2]){
+#'
+#'    empirical_conf_sigma2_50_mcem<- empirical_conf_sigma2_50_mcem+1
+#'
+#'  }
+#'
+#'}
+#'
+#'
+#'conf_mu_prop_mcem<- c(empirical_conf_mu_50_mcem/500)
+#'conf_sigma2_prop_mcem<- c(empirical_conf_sigma2_50_mcem/500)
+#'
+#'
+#'n<- c(50)
+#'ci_mu_prop_mcem<- conf_mu_prop_mcem*100
+#'ci_sigma2_prop_mcem<- conf_sigma2_prop_mcem*100
+#'
+#'
+#'sd_mu_mcem<- c(sd(outputmcem50m15[,1]))
+#'ave_mu_mcem<- c(mean(outputmcem50m15[,1]))
+#'
+#'
+#'se_mu_hat_mcem<- c(mean(se_mcem50m15[,1]))
+#'sd_var_mcem<- c(sd(outputmcem50m15[,2]))
+#'
+#'
+#'ave_var_mcem<- c(mean(outputmcem50m15[,2]))
+#'se_sigma2_hat_mcem<-  c(mean(se_mcem50m15[,2]))
+#'
+#'
+#'
+#'std_mu_estimates_mcem<- cbind(n,ave_mu_mcem,sd_mu_mcem,
+#'                              se_mu_hat_mcem,ci_mu_prop_mcem)
+#'std_sigma2_estimates_mcem<- cbind(n,ave_var_mcem,sd_var_mcem,
+#'                                  se_sigma2_hat_mcem,ci_sigma2_prop_mcem)
+#'
+#'std_mu_estimates_mcem
+#'std_sigma2_estimates_mcem
+#'
+
+
+
+
+zsimmcem<- function(theta,
+                    data){
+
+  k<- 1000
+  sim<- base::matrix(rep(0, k*base::nrow(data)),
+                     ncol=base::nrow(data))
+
+  for(i in 1:base::nrow(data)) {
+    sim[,i]<- truncnorm::rtruncnorm(k,
+                                    a=data[i,1],
+                                    b=data[i,2],
+                                    mean=theta[1],
+                                    sd=theta[2]) }
+
+  wj<- base::matrix(base::rep(0,k*nrow(data)),
+                    ncol=base::nrow(data))
+  wj2<- base::matrix(base::rep(0,k*nrow(data)),
+                     ncol=base::nrow(data))
+
+  for(i in 1:base::nrow(data)){
+
+    wj[,i]<- sim[,i]-theta[1]
+    wj2[,i]<- (sim[,i]-theta[1])^2
+
+  }
+
+  d2<- base::array(base::rep(0,2*2*base::nrow(data)),
+                   c(2,2,base::nrow(data)))
+  for (i in 1:base::nrow(data)){
+
+    d2[1,1,i]<- 1/theta[2]^2
+    d2[1,2,i]<- d2[2,1,i]<- (1/theta[2]^4)*base::mean(wj[,i])
+    d2[2,2,i]<- (-1/(2*theta[2]^4))+((1/theta[2]^6)*base::mean(wj2[,i]))
+
+  }
+
+  d1mu<- wj/(theta[2]^2)
+  d1sigma2<- (-1/(2*theta[2]^2))+(wj2/(2*theta[2]^4))
+
+  dd1<- base::array(base::rep(0,2*k*base::nrow(data)),c(k,2,base::nrow(data)))
+  for(i in 1:base::nrow(data)){
+
+    dd1[,1,i]<- d1mu[,i]
+    dd1[,2,i]<- d1sigma2[,i]
+
+  }
+
+  d1<- base::array(base::rep(0,2*1*base::nrow(data)),
+                   c(2,1,base::nrow(data)))
+  for(i in 1:base::nrow(data)){
+
+    d1[1,1,i]<- ((base::mean(wj[,i]))/(theta[2]^2))
+    d1[2,1,i]<- (-1/(2*theta[2]^2))+((base::mean(wj2[,i]))/(2*theta[2]^4))
+
+  }
+
+  diff1<- base::array(base::rep(0,2*k*base::nrow(data)),
+                      c(k,2,base::nrow(data)))
+  for(i in 1:base::nrow(data)){
+
+    diff1[,1,i]<- dd1[,1,i]-d1[1,1,i]
+    diff1[,2,i]<- dd1[,2,i]-d1[2,1,i]
+
+  }
+
+  diff1_2<- base::array(base::rep(0,2*2*k*base::nrow(data)),
+                        c(2,2,k,base::nrow(data)))
+  for(i in 1:base::nrow(data)){
+
+    for(j in 1:k){
+
+      diff1_2[,,j,i]<- diff1[j,,i]%*%t(diff1[j,,i])
+
+    }
+  }
+
+  mydif<- base::apply(diff1_2,c(1,2,4),mean)
+  mydifmat<- base::array(rep(0,2*2*base::nrow(data)),
+                         c(2,2,base::nrow(data)))
+
+  for(i in 1:base::nrow(data)){
+
+    mydifmat[,,i]<- (d2[,,i]-mydif[,,i])*data[i,base::ncol(data)]
+
+  }
+
+  myinf_init<- base::apply(mydifmat,c(1,2),sum)
+  myinf_final<- base::solve(myinf_init)
+
+  se_MCEM_est<- base::sqrt(base::diag(myinf_final))
+  base::names(se_MCEM_est)<- c("std_mu","std_sigma2")
+  return(se_MCEM_est)
+
+}
+
+
 ################################################################################
 
 
