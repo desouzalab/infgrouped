@@ -436,8 +436,6 @@ muvarstd<- function(thetaupd,
 #' @export
 #' @examples
 #'
-#'  library(infgrouped)
-#'  library(stats)
 #'
 #'  simdataaaa <- infgrouped::univ_simul(ncol_matrix=1,
 #'                        n=50,

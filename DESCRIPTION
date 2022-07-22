@@ -17,6 +17,8 @@ Imports:
     tmvtnorm,
     mvtnorm,
     zoo,
+    HistData,
+    utils,
     sandwich
 Suggests: 
     testthat
